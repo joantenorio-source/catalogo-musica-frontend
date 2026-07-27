@@ -9,7 +9,7 @@ import {
   Typography,
   Alert,
 } from '@mui/material';
-import AlbumIcon from '@mui/icons-material/Album';
+
 import { login } from '../services/authService';
 
 function Login() {
@@ -47,11 +47,16 @@ function Login() {
     >
       <Container maxWidth="xs">
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-          <AlbumIcon sx={{ fontSize: 48, color: 'primary.main' }} />
+          <Box
+            component="img"
+            src="/logo.png"
+            alt="Logo"
+            sx={{ height: 170 }}
+          />
         </Box>
         <Paper elevation={0} sx={{ padding: 4, border: '1px solid rgba(242,238,230,0.08)' }}>
           <Typography variant="h5" component="h1" gutterBottom align="center">
-            Catálogo de Música
+            Sek Sound
           </Typography>
           <Typography
             variant="caption"

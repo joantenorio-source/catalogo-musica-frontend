@@ -1,7 +1,9 @@
 import api from './api';
 
-export async function getAlbums() {
-  const response = await api.get('/api/albums/');
+export async function getAlbums(search = '') {
+  const response = await api.get('/api/albums/', {
+    params: search ? { search } : {},
+  });
   return response.data;
 }
 

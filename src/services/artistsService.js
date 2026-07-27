@@ -1,7 +1,9 @@
 import api from './api';
 
-export async function getArtists() {
-  const response = await api.get('/api/artists/');
+export async function getArtists(search = '') {
+  const response = await api.get('/api/artists/', {
+    params: search ? { search } : {},
+  });
   return response.data;
 }
 

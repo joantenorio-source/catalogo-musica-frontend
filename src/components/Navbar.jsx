@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import AlbumIcon from '@mui/icons-material/Album';
+
 import { useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '../services/authService';
 
@@ -20,10 +20,23 @@ function Navbar() {
   return (
     <AppBar position="static" elevation={0} sx={{ mb: 3 }}>
       <Toolbar>
-        <AlbumIcon sx={{ color: 'primary.main', mr: 1.5 }} />
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Catálogo de Música
-        </Typography>
+        <Box
+         component="img"
+         src="/logo.png"
+         alt="Logo"
+         sx={{ height: 60, mr: 1.5 }}
+      />
+      <Typography
+        variant="h5"
+        sx={{
+          flexGrow: 1,
+          fontWeight: 700,
+          letterSpacing: '0.03em',
+          color: 'primary.main',
+        }}
+      >
+        Sek Sound
+      </Typography>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <Button onClick={() => navigate('/artists')} sx={navButtonStyle('/artists')}>
             Artistas

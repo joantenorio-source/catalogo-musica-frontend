@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -13,10 +14,14 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import AlbumIcon from '@mui/icons-material/Album';
 
 import {
   getArtists,
@@ -26,10 +31,13 @@ import {
 } from '../services/artistsService';
 import ArtistFormDialog from '../components/ArtistFormDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
+import EmptyCoverArt from '../components/EmptyCoverArt';
 
 function Artists() {
+  const navigate = useNavigate();
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingArtist, setEditingArtist] = useState(null);
@@ -39,10 +47,10 @@ function Artists() {
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-  const loadArtists = async () => {
+  const loadArtists = async (search = '') => {
     setLoading(true);
     try {
-      const data = await getArtists();
+      const data = await getArtists(search);
       setArtists(data);
     } catch (err) {
       setSnackbar({ open: true, message: 'Error al cargar artistas', severity: 'error' });
@@ -54,6 +62,13 @@ function Artists() {
   useEffect(() => {
     loadArtists();
   }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      loadArtists(searchTerm);
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
 
   const handleOpenCreate = () => {
     setEditingArtist(null);
@@ -80,7 +95,7 @@ function Artists() {
         setSnackbar({ open: true, message: 'Artista creado', severity: 'success' });
       }
       handleCloseForm();
-      loadArtists();
+      loadArtists(searchTerm);
     } catch (err) {
       setSnackbar({ open: true, message: 'Error al guardar el artista', severity: 'error' });
     }
@@ -102,58 +117,115 @@ function Artists() {
       setSnackbar({ open: true, message: 'Artista eliminado', severity: 'success' });
       setConfirmOpen(false);
       setArtistToDelete(null);
-      loadArtists();
+      loadArtists(searchTerm);
     } catch (err) {
       setSnackbar({ open: true, message: 'Error al eliminar el artista', severity: 'error' });
     }
   };
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+          flexWrap: 'wrap',
+          gap: 2,
+        }}
+      >
         <Typography variant="h4">Artistas</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenCreate}>
           Nuevo Artista
         </Button>
       </Box>
 
+      <TextField
+        fullWidth
+        placeholder="Buscar artista por nombre o país..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{ mb: 4 }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: 'text.secondary' }} />
+              </InputAdornment>
+            ),
+          },
+        }}
+      />
+
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
           <CircularProgress />
         </Box>
       ) : artists.length === 0 ? (
-        <Typography color="text.secondary">No hay artistas registrados todavía.</Typography>
+        <Box sx={{ textAlign: 'center', mt: 8, opacity: 0.6 }}>
+          <AlbumIcon sx={{ fontSize: 56, mb: 2, color: 'text.secondary' }} />
+          <Typography color="text.secondary">
+            {searchTerm ? 'No se encontraron artistas con ese criterio.' : 'No hay artistas registrados todavía.'}
+          </Typography>
+        </Box>
       ) : (
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
           {artists.map((artist) => (
-            <Grid item xs={12} sm={6} md={4} key={artist.id}>
-              <Card>
-                {artist.picture && (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={artist.id}>
+              <Card
+                sx={{ height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
+                onClick={() => navigate(`/artists/${artist.id}`)}
+              >
+                {artist.picture ? (
                   <CardMedia
                     component="img"
                     height="140"
                     image={artist.picture}
                     alt={artist.name}
                   />
+                ) : (
+                  <EmptyCoverArt />
                 )}
-                <CardContent>
+                <CardContent sx={{ flexGrow: 1 }}>
                   <Typography variant="h6">{artist.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
                     {artist.country} · {artist.birth_date}
                   </Typography>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mt: 1,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}
+                  >
                     {artist.biography}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                    Álbumes: {artist.albums ? artist.albums.length : 0}
+                  <Typography variant="caption" color="primary.main" sx={{ mt: 1, display: 'block' }}>
+                    ÁLBUMES: {artist.albums ? artist.albums.length : 0}
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <IconButton onClick={() => handleOpenEdit(artist)} aria-label="editar">
-                    <EditIcon />
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenEdit(artist);
+                    }}
+                    aria-label="editar"
+                  >
+                    <EditIcon fontSize="small" />
                   </IconButton>
-                  <IconButton onClick={() => handleOpenDeleteConfirm(artist)} aria-label="eliminar">
-                    <DeleteIcon />
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenDeleteConfirm(artist);
+                    }}
+                    aria-label="eliminar"
+                  >
+                    <DeleteIcon fontSize="small" />
                   </IconButton>
                 </CardActions>
               </Card>
