@@ -22,6 +22,7 @@ Este proyecto fue realizado para la asignatura de Aplicaciones Web Full-Stack.
 - Git y GitHub
 
 ## 📂 Estructura del proyecto
+```
 frontend/
 ├── src/
 │ ├── components/
@@ -46,6 +47,8 @@ frontend/
 ├── .gitignore
 ├── package.json
 └── README.md
+```
+
 ## 🔐 Autenticación
 
 La aplicación utiliza OAuth 2.0 (grant type `password`) contra el backend Django. El usuario inicia sesión con su usuario y contraseña, el frontend obtiene un `access_token` y lo guarda en `localStorage`. Cada petición a un endpoint protegido incluye automáticamente el token en el header `Authorization: Bearer <token>` mediante un interceptor de Axios.
