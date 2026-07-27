@@ -24,29 +24,46 @@ Este proyecto fue realizado para la asignatura de Aplicaciones Web Full-Stack.
 ## 📂 Estructura del proyecto
 ```
 frontend/
+├── public/
+│   ├── favicon.svg
+│   ├── icons.svg
+│   └── logo.png
 ├── src/
-│ ├── components/
-│ │ ├── ArtistFormDialog.jsx
-│ │ ├── AlbumFormDialog.jsx
-│ │ ├── ConfirmDialog.jsx
-│ │ ├── Navbar.jsx
-│ │ ├── Layout.jsx
-│ │ └── ProtectedRoute.jsx
-│ ├── pages/
-│ │ ├── Login.jsx
-│ │ ├── Artists.jsx
-│ │ └── Albums.jsx
-│ ├── services/
-│ │ ├── api.js
-│ │ ├── authService.js
-│ │ ├── artistsService.js
-│ │ └── albumsService.js
-│ ├── App.jsx
-│ └── main.jsx
-├── .env.example
+│   ├── assets/
+│   ├── components/
+│   │   ├── AlbumFormDialog.jsx
+│   │   ├── ArtistFormDialog.jsx
+│   │   ├── ConfirmDialog.jsx
+│   │   ├── EmptyCoverArt.jsx
+│   │   ├── Layout.jsx
+│   │   ├── Navbar.jsx
+│   │   └── ProtectedRoute.jsx
+│   ├── hooks/
+│   ├── pages/
+│   │   ├── AlbumDetail.jsx
+│   │   ├── Albums.jsx
+│   │   ├── ArtistDetail.jsx
+│   │   ├── Artists.jsx
+│   │   └── Login.jsx
+│   ├── services/
+│   │   ├── albumsService.js
+│   │   ├── api.js
+│   │   ├── artistsService.js
+│   │   └── authService.js
+│   ├── theme/
+│   │   └── theme.js
+│   ├── App.css
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .env
 ├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package-lock.json
 ├── package.json
-└── README.md
+├── README.md
+└── vite.config.js
 ```
 
 ## 🔐 Autenticación
