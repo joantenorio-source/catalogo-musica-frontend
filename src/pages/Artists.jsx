@@ -172,26 +172,41 @@ function Artists() {
       ) : (
         <Grid container spacing={3}>
           {artists.map((artist) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={artist.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={artist.id}>
               <Card
-                sx={{ height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  cursor: 'pointer',
+                }}
                 onClick={() => navigate(`/artists/${artist.id}`)}
               >
                 {artist.picture ? (
                   <CardMedia
                     component="img"
-                    height="140"
+                    height="220"
                     image={artist.picture}
                     alt={artist.name}
+                    sx={{
+                      objectFit: 'cover',
+                    }}
                   />
                 ) : (
                   <EmptyCoverArt />
                 )}
+
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Typography variant="h6">{artist.name}</Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ display: 'block' }}
+                  >
                     {artist.country} · {artist.birth_date}
                   </Typography>
+
                   <Typography
                     variant="body2"
                     sx={{
@@ -204,10 +219,16 @@ function Artists() {
                   >
                     {artist.biography}
                   </Typography>
-                  <Typography variant="caption" color="primary.main" sx={{ mt: 1, display: 'block' }}>
+
+                  <Typography
+                    variant="caption"
+                    color="primary.main"
+                    sx={{ mt: 1, display: 'block' }}
+                  >
                     ÁLBUMES: {artist.albums ? artist.albums.length : 0}
                   </Typography>
                 </CardContent>
+
                 <CardActions>
                   <IconButton
                     onClick={(e) => {
@@ -218,6 +239,7 @@ function Artists() {
                   >
                     <EditIcon fontSize="small" />
                   </IconButton>
+
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();

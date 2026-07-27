@@ -61,7 +61,7 @@ function ArtistDetail() {
       </IconButton>
 
       <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           {artist.picture ? (
             <Box
               component="img"
@@ -76,7 +76,7 @@ function ArtistDetail() {
           )}
         </Grid>
 
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Typography variant="h4" gutterBottom>
             {artist.name}
           </Typography>
@@ -95,7 +95,7 @@ function ArtistDetail() {
           {artist.albums && artist.albums.length > 0 ? (
             <Grid container spacing={2}>
               {artist.albums.map((album) => (
-                <Grid item xs={12} sm={6} key={album.id}>
+                <Grid size={{ xs: 12, sm: 6 }} key={album.id}>
                   <Card
                     sx={{ cursor: 'pointer' }}
                     onClick={() => navigate(`/albums/${album.id}`)}

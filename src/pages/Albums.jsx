@@ -16,6 +16,10 @@ import {
   CircularProgress,
   TextField,
   InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -40,6 +44,7 @@ function Albums() {
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedArtist, setSelectedArtist] = useState('');
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState(null);
@@ -126,6 +131,41 @@ function Albums() {
     }
   };
 
+  const filteredAlbums = albums.filter((album) => {
+  const matchesArtist =
+      selectedArtist === '' ||
+      album.artist === Number(selectedArtist);
+
+    return matchesArtist;
+  });
+
+
+  const groupedAlbums = filteredAlbums.reduce((groups, album) => {
+    const artistName = album.artist_name || 'Sin artista';  
+
+    if (!groups[artistName]) {
+      groups[artistName] = [];
+    }
+
+    groups[artistName].push(album);
+
+    return groups;
+  }, {});
+
+
+  const sortedArtists = Object.entries(groupedAlbums)
+    .sort(
+    ([artistA], [artistB]) =>
+      artistA.localeCompare(artistB, 'es', { sensitivity: 'base' })
+    )
+    .map(([artistName, artistAlbums]) => [
+      artistName,
+      artistAlbums.sort(
+        (a, b) =>
+          new Date(a.release_date) - new Date(b.release_date)
+    ),
+  ]);
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
       <Box
@@ -166,6 +206,28 @@ function Albums() {
         }}
       />
 
+      <FormControl fullWidth sx={{ mb: 4 }}>
+        <InputLabel>Filtrar por artista</InputLabel>
+
+        <Select
+          value={selectedArtist}
+          label="Filtrar por artista"
+          onChange={(e) => setSelectedArtist(e.target.value)}
+        >
+
+          <MenuItem value="">
+            Todos los artistas
+          </MenuItem>
+
+          {artists.map((artist) => (
+            <MenuItem key={artist.id} value={artist.id}>
+              {artist.name}
+            </MenuItem>
+          ))}
+
+        </Select>
+      </FormControl>
+
       {artists.length === 0 && !loading && (
         <Alert severity="warning" sx={{ mb: 3 }}>
           Necesitas crear al menos un artista antes de poder crear álbumes.
@@ -179,61 +241,150 @@ function Albums() {
       ) : albums.length === 0 ? (
         <Box sx={{ textAlign: 'center', mt: 8, opacity: 0.6 }}>
           <AlbumIcon sx={{ fontSize: 56, mb: 2, color: 'text.secondary' }} />
+
           <Typography color="text.secondary">
-            {searchTerm ? 'No se encontraron álbumes con ese criterio.' : 'No hay álbumes registrados todavía.'}
+            {searchTerm
+              ? 'No se encontraron álbumes con ese criterio.'
+              : 'No hay álbumes registrados todavía.'}
           </Typography>
         </Box>
       ) : (
-        <Grid container spacing={3}>
-          {albums.map((album) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={album.id}>
-              <Card
-                sx={{ height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
-                onClick={() => navigate(`/albums/${album.id}`)}
+        <>
+          {sortedArtists.map(([artistName, artistAlbums]) => (
+            <Box key={artistName} sx={{ width: '100%', mb: 5 }}>
+
+              <Typography
+                variant="h5"
+                sx={{
+                  mb: 2,
+                  fontWeight: 700,
+                }}
               >
-                {album.cover ? (
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={album.cover}
-                    alt={album.title}
-                  />
-                ) : (
-                  <EmptyCoverArt />
-                )}
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6">{album.title}</Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                    {album.artist_name} · {album.release_date}
-                  </Typography>
-                  <Typography variant="caption" color="primary.main" sx={{ mt: 1, display: 'block' }}>
-                    {album.genre?.toUpperCase()}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenEdit(album);
-                    }}
-                    aria-label="editar"
+                🎤 {artistName}
+              </Typography>
+
+
+              <Grid container spacing={3}>
+                {artistAlbums.map((album) => (
+                  <Grid
+                    size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+                    key={album.id}
                   >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenDeleteConfirm(album);
-                    }}
-                    aria-label="eliminar"
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </CardActions>
-              </Card>
-            </Grid>
+
+                    <Card
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        borderRadius: 3,
+                        overflow: 'hidden',
+                        '&:hover': {
+                          transform: 'translateY(-6px)',
+                          boxShadow: 8,
+                        },
+                      }}
+                      onClick={() => navigate(`/albums/${album.id}`)}
+                    >
+
+                      {album.cover ? (
+                        <CardMedia
+                          component="img"
+                          height="220"
+                          image={album.cover}
+                          alt={album.title}
+                          sx={{
+                            objectFit: 'cover',
+                          }}
+                        />
+                      ) : (
+                        <EmptyCoverArt />
+                      )}
+
+
+                      <CardContent sx={{ flexGrow: 1 }}>
+
+                        <Typography variant="h6" fontWeight={600}>
+                          {album.title}
+                        </Typography>
+
+
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 0.5 }}
+                        >
+                          {album.artist_name}
+                        </Typography>
+
+
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            display: 'block',
+                            mt: 1,
+                          }}
+                        >
+                          Lanzamiento: {album.release_date}
+                        </Typography>
+
+
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            mt: 1,
+                            display: 'inline-block',
+                            px: 1,
+                            py: 0.3,
+                            borderRadius: 1,
+                            bgcolor: 'primary.main',
+                            color: 'white',
+                            fontWeight: 600,
+                          }}
+                        >
+                          {album.genre?.toUpperCase()}
+                        </Typography>
+
+                      </CardContent>
+
+
+                      <CardActions>
+
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEdit(album);
+                          }}
+                          aria-label="editar"
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+
+
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenDeleteConfirm(album);
+                          }}
+                          aria-label="eliminar"
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+
+                      </CardActions>
+
+
+                    </Card>
+
+                  </Grid>
+                ))}
+              </Grid>
+
+            </Box>
           ))}
-        </Grid>
+        </>
       )}
 
       <AlbumFormDialog

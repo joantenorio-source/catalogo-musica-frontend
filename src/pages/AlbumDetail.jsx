@@ -59,7 +59,7 @@ function AlbumDetail() {
       </IconButton>
 
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={5}>
+        <Grid size={{ xs: 12, sm: 5 }}>
           <Box
             sx={{
               width: '100%',
@@ -82,7 +82,7 @@ function AlbumDetail() {
           </Box>
         </Grid>
 
-        <Grid item xs={12} sm={7}>
+        <Grid size={{ xs: 12, sm: 7 }}>
           <Paper elevation={0} sx={{ p: 3, border: '1px solid rgba(242,238,230,0.08)', height: '100%' }}>
             <Typography variant="h4" gutterBottom>
               {album.title}
